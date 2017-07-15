@@ -193,9 +193,8 @@
            (princ prev-char stream)))))))
 
 (defun datetime-formatter (&optional format-string)
-  "Date and time formatter. return a function takes 1 or two parameters:
-  stream: nil/t/stream
-  universal-time-us: nil/universal-time-us"
+  "Date and time formatter. return a function:
+  (lambda (stream &key time time-ms time-us zone))"
   (unless format-string
     (setf format-string "yyyy-MM-dd'T'HH:ss:mm.SSS"))
   (lambda (stream &key time time-ms time-us zone)
