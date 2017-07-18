@@ -100,50 +100,64 @@
 
 (defun format-integer (stream number length max-length
                        &key (from-end t))
-  (check-type number integer)
-  (check-type length integer)
-  (check-type max-length integer)
+  (declare (optimize (speed 3) (safety 0))
+           (integer number length max-length))
   (assert (<= 1 length max-length))
-  (princ (if from-end
-             (subseq (format nil (format nil "~~~A,'0d" max-length) number)
-                     (- max-length length))
-             (subseq (format nil (format nil "~~~A,'0d" max-length) number)
-                     0
-                     length))
-         stream))
+  (let* ((number-string (write-to-string number))
+         (number-length (length number-string)))
+    (declare (optimize (speed 3) (safety 0))
+             (dynamic-extent number-string number-length)
+             (string number-string)
+             (integer number-length))
+    (if (= length number-length)
+        (write-string number-string stream)
+        (if from-end
+            (if (< number-length length)
+                (progn
+                  (dotimes (var (- length number-length))
+                    (declare (optimize (speed 3) (safety 0)))
+                    (write-char #\0 stream))
+                  (write-string number-string stream))
+                (write-string (subseq number-string (- number-length length)) stream))
+            (if (< number-length length)
+                (progn
+                  (write-string number-string stream)
+                  (dotimes (var (- length number-length))
+                    (write-char #\0 stream)))
+                (write-string (subseq number-string 0 length) stream))))))
 
 (defun format-week-day (stream day char-count)
-  (princ (case char-count
-           ((1 2 3)
-            (case day
-              (0 "Mon")
-              (1 "Tue")
-              (2 "Wed")
-              (3 "Thu")
-              (4 "Fri")
-              (5 "Sat")
-              (6 "Sun")))
-           (4
-            (case day
-              (0 "Monday")
-              (1 "Tuesday")
-              (2 "Wednesday")
-              (3 "Thursday")
-              (4 "Friday")
-              (6 "Sunday")
-              (5 "Saturday")))
-           (5
-            (case day
-              (0 "M")
-              (1 "T")
-              (2 "W")
-              (3 "T")
-              (4 "F")
-              (5 "S")
-              (6 "S")))
-           (t
-            (error "too many pattern letters: E")))
-         stream))
+  (write-string (case char-count
+                  ((1 2 3)
+                   (ccase day
+                     (0 "Mon")
+                     (1 "Tue")
+                     (2 "Wed")
+                     (3 "Thu")
+                     (4 "Fri")
+                     (5 "Sat")
+                     (6 "Sun")))
+                  (4
+                   (ccase day
+                     (0 "Monday")
+                     (1 "Tuesday")
+                     (2 "Wednesday")
+                     (3 "Thursday")
+                     (4 "Friday")
+                     (6 "Sunday")
+                     (5 "Saturday")))
+                  (5
+                   (ccase day
+                     (0 "M")
+                     (1 "T")
+                     (2 "W")
+                     (3 "T")
+                     (4 "F")
+                     (5 "S")
+                     (6 "S")))
+                  (t
+                   (error "too many pattern letters: E")))
+                stream))
 
 (defun format-datetime-char (stream escape-p prev-char char-count
                              microsecond
@@ -175,21 +189,21 @@
                      :from-end nil))
     (#\a
      (if (>= hour 12)
-         (princ "PM" stream)
-         (princ "AM" stream)))
+         (write-string "PM" stream)
+         (write-string "AM" stream)))
     (#\E
      (format-week-day stream day char-count))
     (#\Z
      (if (plusp zone)
-         (princ "-" stream)
-         (princ "+" stream))
+         (write-char #\- stream)
+         (write-char #\+ stream))
      (format stream "~2,'0d00" (abs zone)))
     (t
      (when prev-char
        (when (not (and (eq #\' prev-char)
                        (not escape-p)))
          (dotimes (var char-count)
-           (princ prev-char stream)))))))
+           (write-char prev-char stream)))))))
 
 (defun datetime-formatter (&optional format-string)
   "Date and time formatter. return a function:
@@ -197,9 +211,6 @@
   (unless format-string
     (setf format-string "yyyy-MM-dd'T'HH:ss:mm.SSS"))
   (lambda (stream &key time time-ms time-us zone)
-    (check-type time (or null integer))
-    (check-type time-ms (or null integer))
-    (check-type time-us (or null integer))
     (or (and time
              (setf time-us (* 1000000 time)))
         (and time-ms
