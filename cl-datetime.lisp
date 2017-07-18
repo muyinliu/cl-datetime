@@ -166,44 +166,32 @@
                              daylight-p zone)
   (declare (ignorable microsecond daylight-p))
   (case prev-char
-    (#\y
-     (format-integer stream year char-count 4))
-    (#\M
-     (format-integer stream month char-count 2))
-    (#\d
-     (format-integer stream date char-count 2))
-    (#\H
-     (format-integer stream hour char-count 2))
-    (#\h
-     (format-integer stream (let ((remainder (mod hour 12)))
-                              (if (zerop remainder)
-                                  12
-                                  remainder))
-                     char-count 2))
-    (#\m
-     (format-integer stream minute char-count 2))
-    (#\s
-     (format-integer stream second char-count 2))
-    (#\S
-     (format-integer stream millisecond char-count 3
-                     :from-end nil))
-    (#\a
-     (if (>= hour 12)
-         (write-string "PM" stream)
-         (write-string "AM" stream)))
-    (#\E
-     (format-week-day stream day char-count))
-    (#\Z
-     (if (plusp zone)
-         (write-char #\- stream)
-         (write-char #\+ stream))
-     (format stream "~2,'0d00" (abs zone)))
-    (t
-     (when prev-char
-       (when (not (and (eq #\' prev-char)
-                       (not escape-p)))
-         (dotimes (var char-count)
-           (write-char prev-char stream)))))))
+    (#\y (format-integer stream year char-count 4))
+    (#\M (format-integer stream month char-count 2))
+    (#\d (format-integer stream date char-count 2))
+    (#\H (format-integer stream hour char-count 2))
+    (#\h (format-integer stream (let ((remainder (mod hour 12)))
+                                  (if (zerop remainder)
+                                      12
+                                      remainder))
+                         char-count 2))
+    (#\m (format-integer stream minute char-count 2))
+    (#\s (format-integer stream second char-count 2))
+    (#\S (format-integer stream millisecond char-count 3
+                         :from-end nil))
+    (#\a (if (>= hour 12)
+             (write-string "PM" stream)
+             (write-string "AM" stream)))
+    (#\E (format-week-day stream day char-count))
+    (#\Z (if (plusp zone)
+             (write-char #\- stream)
+             (write-char #\+ stream))
+         (format stream "~2,'0d00" (abs zone)))
+    (t   (when prev-char
+           (when (not (and (eq #\' prev-char)
+                           (not escape-p)))
+             (dotimes (var char-count)
+               (write-char prev-char stream)))))))
 
 (defun datetime-formatter (&optional format-string)
   "Date and time formatter. return a function:
