@@ -185,7 +185,6 @@
          (princ "+" stream))
      (format stream "~2,'0d00" (abs zone)))
     (t
-     ;; (format t "prev-char: ~S, char nil~%" prev-char)
      (when prev-char
        (when (not (and (eq #\' prev-char)
                        (not escape-p)))
@@ -224,13 +223,11 @@
          peek-char
            (setf prev-char char)
            (setf char (car char-list))
-           ;; (format t "~%prev-char: ~S, char: ~S~%" prev-char char)
            (setf char-list (rest char-list))
            (go deal)
          deal
            (when (eq #\' prev-char)
              (setf escape-p (not escape-p)))
-           ;; (format t "escape-p: ~S~%" escape-p)
            (if escape-p
                (unless (and (eq #\' char)
                             (not (eq #\' prev-char)))
