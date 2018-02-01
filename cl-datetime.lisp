@@ -197,7 +197,7 @@
   "Date and time formatter. return a function:
   (lambda (stream &key time time-ms time-us zone))"
   (unless format-string
-    (setf format-string "yyyy-MM-dd'T'HH:ss:mm.SSS"))
+    (setf format-string "yyyy-MM-dd'T'HH:mm:ss.SSS"))
   (lambda (stream &key time time-ms time-us zone)
     (or (and time
              (setf time-us (* 1000000 time)))
