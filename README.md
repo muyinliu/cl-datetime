@@ -22,11 +22,14 @@ Note: Welcome to reply test results in other Common Lisp implements.
 ## Install and load with QuickLisp
 
 In shell:
+
 ```shell
 git clone https://github.com/muyinliu/cl-datetime.git
 cp -r cl-datetime ~/quicklisp/local-projects/
 ```
-In Common Lisp: 
+
+Then in Common Lisp:
+
 ```lisp
 (ql:quickload 'cl-datetime)
 ```
@@ -145,34 +148,34 @@ Note: nicknames of `cl-datetime`: `datetime`, `dt`
 
 #### supported format string
 
-| String | Meaning                | Output example | Note                          |
-|--------|-------------|----------------|---------------|
-| yyyy   | year in 4 digit        |           2017 |                               |
-| yyy    | year in 3 digit        |            017 |                               |
-| yy     | year in 2 digit        |             17 |                               |
-| y      | year in 1 digit        |              7 |                               |
-| MM     | month in 2 digit       |             07 |                               |
-| M      | month in 1 digit       |              7 |                               |
-| dd     | day in 2 digit         |             14 |                               |
-| d      | day in 1 digit         |              4 |                               |
-| HH     | hour in 2 digit        |             17 |                               |
-| H      | hour in 1 digit        |              7 |
-| hh     | hour in 2 digit(12hour)        |             12 |                               |
-| h      | hour in 1 digit(12hour)        |              2 |                               |
-| mm     | minute in 2 digit      |             35 |                               |
-| m      | minute in 1 digit      |              5 |                               |
-| ss     | second in 2 digit      |             48 |                               |
-| s      | second in 1 digit      |              8 |                               |
-| SSS    | millisecond in 3 digit |            357 |                               |
-| SS     | millisecond in 2 digit |             35 |                               |
-| S      | millisecond in 1 digit |              3 |                               |
-| Z      | timezone               |          +0800 |                               |
-| a      | AM/PM                  |             AM | hour < 12 is AM, otherwise PM |
-| EEEEE  | week days in 1 letter  |              T |                               |
-| EEEE   | week days' fullname    |       Thursday |                               |
-| EEE    | week days' shortname   |            Thu |                               |
-| EE     | week days' shortname   |            Thu |                               |
-| E      | week days' shortname   |            Thu |                               |
+| String  | Meaning                 | Output example | Note                          |
+|---------|-------------------------|----------------|-------------------------------|
+| `yyyy`  | year in 4 digit         | 2017           |                               |
+| `yyy`   | year in 3 digit         | 017            |                               |
+| `yy`    | year in 2 digit         | 17             |                               |
+| `y`     | year in 1 digit         | 7              |                               |
+| `MM`    | month in 2 digit        | 07             |                               |
+| `M`     | month in 1 digit        | 7              |                               |
+| `dd`    | day in 2 digit          | 14             |                               |
+| `d`     | day in 1 digit          | 4              |                               |
+| `HH`    | hour in 2 digit         | 17             |                               |
+| `H`     | hour in 1 digit         | 7              |                               |
+| `hh`    | hour in 2 digit(12hour) | 12             |                               |
+| `h`     | hour in 1 digit(12hour) | 2              |                               |
+| `mm`    | minute in 2 digit       | 35             |                               |
+| `m`     | minute in 1 digit       | 5              |                               |
+| `ss`    | second in 2 digit       | 48             |                               |
+| `s`     | second in 1 digit       | 8              |                               |
+| `SSS`   | millisecond in 3 digit  | 357            |                               |
+| `SS`    | millisecond in 2 digit  | 35             |                               |
+| `S`     | millisecond in 1 digit  | 3              |                               |
+| `Z`     | timezone                | +0800          |                               |
+| `a`     | AM/PM                   | AM             | hour < 12 is AM, otherwise PM |
+| `EEEEE` | week days in 1 letter   | T              |                               |
+| `EEEE`  | week days' fullname     | Thursday       |                               |
+| `EEE`   | week days' shortname    | Thu            |                               |
+| `EE`    | week days' shortname    | Thu            |                               |
+| `E`     | week days' shortname    | Thu            |                               |
 
 Note: week days now only support English.
 
@@ -182,9 +185,9 @@ Note: AM/PM now only support English.
 
 ```lisp
 (format t 
-            (dt:datetime-formatter "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            :time-us (get-universal-time-us) 
-            :zone 0)
+        (dt:datetime-formatter "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        :time-us (get-universal-time-us)
+        :zone 0)
 ```
 =>
 ```=>
@@ -193,16 +196,16 @@ Note: AM/PM now only support English.
 
 ```lisp
 (format t 
-            (dt:datetime-formatter "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            :time-us 3708816107292184
-            :zone -8)
+        (dt:datetime-formatter "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+        :time-us 3708816107292184
+        :zone -8)
 ```
 =>
 ```=>
 2017-07-12T10:41:47.292+0800
 ```
 
-#### enable datetime's readtable
+#### enable datetime formatter's readtable
 
 ```lisp
 (named-readtables:in-readtable dt:datetime-readtable)
@@ -215,6 +218,8 @@ Note: AM/PM now only support English.
 ```=>
 2017-07-12T10:41:47.292+0800
 ```
+
+Note: use `#_` as datetime formatter 's read macro
 
 ### parse
 
