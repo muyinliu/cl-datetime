@@ -228,5 +228,5 @@ Note: use `#_` as datetime formatter 's read macro
 ## Test cl-datetime
 
 ```shell
-sbcl --eval "(asdf:test-system :cl-datetime)"
+sbcl --noinform --eval "(asdf:test-system :cl-datetime)" --quit
 ```
