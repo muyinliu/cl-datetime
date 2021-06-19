@@ -11,7 +11,7 @@
   :serial t
   :components ((:file "packages")
                (:file "utils")
-               #+(or bsd freebsd linux)
+               #+(or bsd unix freebsd linux)
                (:module "unix"
                         :serial t
                         :components ((:file "cl-datetime-gettimeofday")))
