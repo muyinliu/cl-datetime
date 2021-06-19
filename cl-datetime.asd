@@ -1,4 +1,4 @@
-(defsystem "cl-datetime"
+(asdf:defsystem "cl-datetime"
   :name "datetime"
   :description "Date and time library for Common Lisp."
   :version "0.0.1"
