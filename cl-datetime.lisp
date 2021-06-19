@@ -450,3 +450,37 @@
                            (parse-integer day)
                            (parse-integer month)
                            (parse-integer year))))
+
+;;; datetime period utils
+
+(defconstant +one-day-second-count+ 86400)
+(defconstant +one-day-millisecond-count+ 86400000)
+
+(defun today-begin-universal-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (second minute hour date month year)
+      (get-decoded-time)
+    (declare (ignore second minute hour))
+    (encode-universal-time 0 0 0 date month year)))
+
+(defun today-end-universal-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (+ (today-begin-universal-time) +one-day-second-count+))
+
+(defun day-range-universal-time (offset)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (let ((today-begin-universal-time (today-begin-universal-time)))
+    (values (+ today-begin-universal-time (* offset +one-day-second-count+))
+            (+ today-begin-universal-time (* (1+ offset) +one-day-second-count+)))))
+
+(defun today-range-universal-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (day-range-universal-time 0))
+
+(defun yestoday-range-universal-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (day-range-universal-time -1))
+
+(defun tomorrow-range-universal-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (day-range-universal-time 1))

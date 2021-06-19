@@ -5,6 +5,8 @@
   (:export #:+unix->universal-time+
            #:+unix->universal-time-ms+
            #:+unix->universal-time-us+
+           #:+one-day-second-count+
+           #:+one-day-millisecond-count+
 
            ;; universal-time in ms and us utils
            #:get-universal-time-ms
@@ -53,6 +55,14 @@
            #:yyyyMMdd->universal-time
            #:yyyy-MM-dd->universal-time
            #:yyyy/MM/dd->universal-time
+
+           ;; period utils
+           #:today-begin-universal-time
+           #:today-end-universal-time
+           #:day-range-universal-time
+           #:today-range-universal-time
+           #:yestoday-range-universal-time
+           #:tomorrow-range-universal-time
 
            ;; readtable utils
            #:datetime-readtable))
