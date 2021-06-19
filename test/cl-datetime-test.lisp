@@ -250,18 +250,18 @@
       (is (format nil (dt:datetime-formatter)
                   :time-us universal-time-us
                   :zone 0)
-          "2017-07-13T05:57:58.135")
+          "2017-07-13T05:58:57.135")
       (is (format nil (dt:datetime-formatter)
                   :time-us universal-time-us
                   :zone -8)
-          "2017-07-13T13:57:58.135")
+          "2017-07-13T13:58:57.135")
       (is (format nil (dt:datetime-formatter)
                   :time-us universal-time-us
                   :zone +8)
-          "2017-07-12T21:57:58.135")
+          "2017-07-12T21:58:57.135")
       (is (format nil (dt:datetime-formatter)
                   :time-us universal-time-us
                   :zone -12)
-          "2017-07-13T17:57:58.135"))))
+          "2017-07-13T17:58:57.135"))))
 
 (finalize)
