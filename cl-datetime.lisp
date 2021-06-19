@@ -285,3 +285,99 @@
   (:dispatch-macro-char #\# #\_ #'datetime-formatter-reader))
 
 )
+
+;;; datetime format utils
+
+(defun universal-time->yyyyMMddHHmmss (universal-time)
+  "Format universal-time in format yyyyMMddHHmmss, like 20140330210342"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (format nil "~A~2,'0d~2,'0d~2,'0d~2,'0d~2,'0d" y mm d h m s)))
+
+(defun universal-time->yyyyMMdd (universal-time)
+  "Format universal-time in format yyyyMMdd, like 20140330"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~A~2,'0d~2,'0d" y mm d)))
+
+(defun universal-time->yyMMdd (universal-time)
+  "Format universal-time in format yyMMdd, like 140330"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~2,'0d~2,'0d~2,'0d" (mod y 100) mm d)))
+
+(defun universal-time->iso-time (universal-time)
+  "Format universal-time in format yyyy-MM-dd HH:mm:ss, like 2014-03-30 21:03:42)"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (format nil
+            "~A-~2,'0d-~2,'0d ~2,'0d:~2,'0d:~2,'0d"
+            y mm d h m s)))
+
+(defun universal-time->yyyy-MM-dd (universal-time)
+  "Format universal-time in format yyyy-MM-dd, like 2014-03-30"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~A-~2,'0d-~2,'0d" y mm d)))
+
+(defun universal-time->yyyy/MM/dd (universal-time)
+  "Format universal-time in format yyyy/MM/dd, like 2014/03/30"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~A/~2,'0d/~2,'0d" y mm d)))
+
+(defun universal-time->yy-MM-dd (universal-time)
+  "Format universal-time in format yy-MM-dd, like 14-03-30"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~2,'0A-~2,'0d-~2,'0d" (mod y 100) mm d)))
+
+(defun universal-time->yy/MM/dd (universal-time)
+  "Format universal-time in format yyMM/dd, like 14/03/30"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (multiple-value-bind (s m h d mm y)
+      (decode-universal-time universal-time)
+    (declare (ignore s m h))
+    (format nil "~2,'0A/~2,'0d/~2,'0d" (mod y 100) mm d)))
+
+(defun time-in-human-readable (second &key (unit-list '("秒" "分钟" "小时" "天" "年")))
+  "Time(seconds count) in human-readable."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (let ((scale-list (list 60 60 24 365))
+        remainder-list)
+    (with-output-to-string (stream)
+      (loop with scale-list-length = (length scale-list)
+            and scale-index = 0
+            and pre-consult = second
+            do (let ((scale (if (> scale-index (1- scale-list-length))
+                                nil
+                                (nth scale-index scale-list))))
+                 (if (and scale
+                          (>= pre-consult scale))
+                     (multiple-value-bind (consult remainder)
+                         (floor pre-consult scale)
+                       (push remainder remainder-list)
+                       (incf scale-index)
+                       (setf pre-consult consult))
+                     (progn
+                       (push pre-consult remainder-list)
+                       (loop-finish)))))
+      (format stream (format nil "~~{~~A~~A~@[~~^ ~]~~}" (not chinese-p))
+              (loop for remainder in remainder-list
+                    and unit in (reverse (subseq unit-list 0 (length remainder-list)))
+                    when (> remainder 0)
+                      collect remainder
+                    when (> remainder 0)
+                      collect unit)))))

@@ -38,7 +38,15 @@
            ;; format utils
            #:format-integer
            #:datetime-formatter
+           #:universal-time->yyyyMMddHHmmss
+           #:universal-time->yyyyMMdd
+           #:universal-time->yyMMdd
+           #:universal-time->iso-time
+           #:universal-time->yyyy-MM-dd
+           #:universal-time->yy-MM-dd
+           #:universal-time->yyyy/MM/dd
+           #:universal-time->yy/MM/dd
+           #:time-in-human-readable
 
            ;; readtable utils
-           #:datetime-readtable
-           ))
+           #:datetime-readtable))
