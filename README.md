@@ -146,6 +146,98 @@ Note: nicknames of `cl-datetime`: `datetime`, `dt`
 2017-07-12T10:41:47.292+0800
 ```
 
+#### useful format utils
+
+##### `dt:universal-time->yyyyMMddHHmmss`
+
+```lisp
+(dt:universal-time->yyyyMMddHHmmss (get-universal-time))
+```
+=>
+```=>
+"20210619195622"
+```
+
+##### `dt:universal-time->yyyyMMdd`
+
+```lisp
+(dt:universal-time->yyyyMMdd (get-universal-time))
+```
+=>
+```=>
+"20210619"
+```
+
+##### `dt:universal-time->yyMMdd`
+
+```lisp
+(dt:universal-time->yyMMdd (get-universal-time))
+```
+=>
+```=>
+"210619"
+```
+
+##### `dt:universal-time->iso-time`
+
+```lisp
+(dt:universal-time->iso-time (get-universal-time))
+```
+=>
+```=>
+"2021-06-19 19:56:22"
+```
+
+##### `dt:universal-time->yyyy-MM-dd`
+
+```lisp
+(dt:universal-time->yyyy-MM-dd (get-universal-time))
+```
+=>
+```=>
+"2021-06-19"
+```
+
+##### `dt:universal-time->yyyy/MM/dd`
+
+```lisp
+(dt:universal-time->yyyy/MM/dd (get-universal-time))
+```
+=>
+```=>
+"2021/06/19"
+```
+
+##### `dt:universal-time->yy-MM-dd`
+
+```lisp
+(dt:universal-time->yy-MM-dd (get-universal-time))
+```
+=>
+```=>
+"21-06-19"
+```
+
+##### `dt:universal-time->yy/MM/dd`
+
+```lisp
+(dt:universal-time->yy/MM/dd (get-universal-time))
+```
+=>
+```=>
+"21/06/19"
+```
+
+##### `dt:time-in-human-readable`
+
+```lisp
+(dt:time-in-human-readable 100000)
+```
+=>
+```=>
+"1天3小时46分钟40秒"
+```
+
 #### supported format string
 
 | String  | Meaning                 | Output example | Note                          |
