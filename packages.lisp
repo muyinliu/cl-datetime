@@ -48,5 +48,11 @@
            #:universal-time->yy/MM/dd
            #:time-in-human-readable
 
+           ;; parse utils
+           #:iso-time->universal-time
+           #:yyyyMMdd->universal-time
+           #:yyyy-MM-dd->universal-time
+           #:yyyy/MM/dd->universal-time
+
            ;; readtable utils
            #:datetime-readtable))

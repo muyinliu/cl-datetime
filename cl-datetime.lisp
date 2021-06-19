@@ -381,3 +381,72 @@
                       collect remainder
                     when (> remainder 0)
                       collect unit)))))
+
+;;; datetime parse utils
+
+(defun iso-time->universal-time (iso-time-string)
+  "Convert iso-time-string\(in format yyyy-MM-dd HH:mm:ss, like 2016-01-17 08:46:47\) to Universal-Time."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (ppcre:register-groups-bind (year month day hour minute second)
+      ("^(\\d{4})-(\\d{2})-(\\d{2}) (\\d{2}):(\\d{2}):(\\d{2})$"
+       iso-time-string)
+    (check-type second string)
+    (check-type minute string)
+    (check-type hour   string)
+    (check-type day    string)
+    (check-type month  string)
+    (check-type year   string)
+    (encode-universal-time (parse-integer second)
+                           (parse-integer minute)
+                           (parse-integer hour)
+                           (parse-integer day)
+                           (parse-integer month)
+                           (parse-integer year))))
+
+(defun yyyyMMdd->universal-time (date-string)
+  "Convert date-string\(in format yyyyMMdd, like 20160117\) to Universal-Time."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (ppcre:register-groups-bind (year month day)
+      ("^(\\d{4})(\\d{2})(\\d{2})$"
+       date-string)
+    (check-type day   string)
+    (check-type month string)
+    (check-type year  string)
+    (encode-universal-time 0
+                           0
+                           0
+                           (parse-integer day)
+                           (parse-integer month)
+                           (parse-integer year))))
+
+(defun yyyy-MM-dd->universal-time (date-string)
+  "Convert date-string\(in format yyyy-MM-dd, like 2016-01-17\) to Universal-Time."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (ppcre:register-groups-bind (year month day)
+      ("^(\\d{4})-(\\d{2})-(\\d{2})$"
+       date-string)
+    (check-type day   string)
+    (check-type month string)
+    (check-type year  string)
+    (encode-universal-time 0
+                           0
+                           0
+                           (parse-integer day)
+                           (parse-integer month)
+                           (parse-integer year))))
+
+(defun yyyy/MM/dd->universal-time (date-string)
+  "Convert date-string\(in format yyyy/MM/dd, like 2016/01/17\) to Universal-Time."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
+  (ppcre:register-groups-bind (year month day)
+      ("^(\\d{4})/(\\d{2})/(\\d{2})$"
+       date-string)
+    (check-type day   string)
+    (check-type month string)
+    (check-type year  string)
+    (encode-universal-time 0
+                           0
+                           0
+                           (parse-integer day)
+                           (parse-integer month)
+                           (parse-integer year))))
