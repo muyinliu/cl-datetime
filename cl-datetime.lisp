@@ -226,53 +226,55 @@
   (unless format-string
     (setf format-string "yyyy-MM-dd'T'HH:mm:ss.SSS"))
   (lambda (stream &key time time-ms time-us zone)
-    (or (and time
-             (setf time-us (* 1000000 time)))
-        (and time-ms
-             (setf time-us (* 1000 time-ms))))
-    (unless time-us
-      (setf time-us (get-universal-time-us)))
     (when zone
       (assert (<= -12 zone 11)))
-    (multiple-value-bind (microsecond
-                          millisecond
-                          second minute hour date month year day
-                          daylight-p zone)
-        (decode-universal-time-us time-us zone)
-      (let ((char-list (concatenate 'list format-string))
-            (char nil)
-            (char-count 0)
-            (prev-char nil)
-            (escape-p nil)
-            (end-p nil))
-        (tagbody
-         peek-char
-           (setf prev-char char)
-           (setf char (car char-list))
-           (setf char-list (rest char-list))
-           (go deal)
-         deal
-           (when (eq #\' prev-char)
-             (setf escape-p (not escape-p)))
-           (if escape-p
-               (unless (and (eq #\' char)
-                            (not (eq #\' prev-char)))
-                 (when char
-                   (princ char stream)))
-               (if (eq char prev-char)
-                   (incf char-count)
-                   (progn
-                     (format-datetime-char stream escape-p prev-char char-count
-                                           microsecond
-                                           millisecond
-                                           second minute hour date month year day
-                                           daylight-p zone)
-                     (setf char-count 1))))
-           (if (car char-list)
-               (go peek-char)
-               (unless end-p
-                 (setf end-p t)
-                 (go peek-char))))))))
+    (let ((time-us (cond (time
+                          (* 1000000 time))
+                         (time-ms
+                          (* 1000 time-ms))
+                         (time-us
+                          time-us)
+                         (t
+                          (get-universal-time-us)))))
+      (multiple-value-bind (microsecond
+                            millisecond
+                            second minute hour date month year day
+                            daylight-p zone)
+          (decode-universal-time-us time-us zone)
+        (let ((char-list (concatenate 'list format-string))
+              (char nil)
+              (char-count 0)
+              (prev-char nil)
+              (escape-p nil)
+              (end-p nil))
+          (tagbody
+           peek-char
+             (setf prev-char char)
+             (setf char (car char-list))
+             (setf char-list (rest char-list))
+             (go deal)
+           deal
+             (when (eq #\' prev-char)
+               (setf escape-p (not escape-p)))
+             (if escape-p
+                 (unless (and (eq #\' char)
+                              (not (eq #\' prev-char)))
+                   (when char
+                     (princ char stream)))
+                 (if (eq char prev-char)
+                     (incf char-count)
+                     (progn
+                       (format-datetime-char stream escape-p prev-char char-count
+                                             microsecond
+                                             millisecond
+                                             second minute hour date month year day
+                                             daylight-p zone)
+                       (setf char-count 1))))
+             (if (car char-list)
+                 (go peek-char)
+                 (unless end-p
+                   (setf end-p t)
+                   (go peek-char)))))))))
 
 (defun datetime-formatter-reader (stream subchar arg)
   (declare (optimize (speed 3) (safety 0) (debug 0)))
@@ -358,29 +360,31 @@
   (let ((scale-list (list 60 60 24 365))
         remainder-list)
     (with-output-to-string (stream)
-      (loop with scale-list-length = (length scale-list)
-            and scale-index = 0
-            and pre-consult = second
-            do (let ((scale (if (> scale-index (1- scale-list-length))
-                                nil
-                                (nth scale-index scale-list))))
-                 (if (and scale
-                          (>= pre-consult scale))
-                     (multiple-value-bind (consult remainder)
-                         (floor pre-consult scale)
-                       (push remainder remainder-list)
-                       (incf scale-index)
-                       (setf pre-consult consult))
-                     (progn
-                       (push pre-consult remainder-list)
-                       (loop-finish)))))
+      (loop
+         with scale-list-length = (length scale-list)
+         and scale-index = 0
+         and pre-consult = second
+         do (let ((scale (if (> scale-index (1- scale-list-length))
+                             nil
+                             (nth scale-index scale-list))))
+              (if (and scale
+                       (>= pre-consult scale))
+                  (multiple-value-bind (consult remainder)
+                      (floor pre-consult scale)
+                    (push remainder remainder-list)
+                    (incf scale-index)
+                    (setf pre-consult consult))
+                  (progn
+                    (push pre-consult remainder-list)
+                    (loop-finish)))))
       (format stream (format nil "~~{~~A~~A~@[~~^ ~]~~}" (not chinese-p))
-              (loop for remainder in remainder-list
-                    and unit in (reverse (subseq unit-list 0 (length remainder-list)))
-                    when (> remainder 0)
-                      collect remainder
-                    when (> remainder 0)
-                      collect unit)))))
+              (loop
+                 for remainder in remainder-list
+                 and unit in (reverse (subseq unit-list 0 (length remainder-list)))
+                 when (> remainder 0)
+                   collect remainder
+                 when (> remainder 0)
+                   collect unit)))))
 
 ;;; datetime parse utils
 
