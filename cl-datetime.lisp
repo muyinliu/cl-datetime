@@ -354,37 +354,40 @@
     (declare (ignore s m h))
     (format nil "~2,'0A/~2,'0d/~2,'0d" (mod y 100) mm d)))
 
-(defun time-in-human-readable (second &key (unit-list '("秒" "分钟" "小时" "天" "年")))
+(defun time-in-human-readable (second
+                               &key
+                                 (unit-list '("秒" "分钟" "小时" "天" "年"))
+                                 (chinese-p t))
   "Time(seconds count) in human-readable."
   (declare (optimize (speed 3) (safety 0) (debug 0)))
   (let ((scale-list (list 60 60 24 365))
         remainder-list)
     (with-output-to-string (stream)
       (loop
-         with scale-list-length = (length scale-list)
-         and scale-index = 0
-         and pre-consult = second
-         do (let ((scale (if (> scale-index (1- scale-list-length))
-                             nil
-                             (nth scale-index scale-list))))
-              (if (and scale
-                       (>= pre-consult scale))
-                  (multiple-value-bind (consult remainder)
-                      (floor pre-consult scale)
-                    (push remainder remainder-list)
-                    (incf scale-index)
-                    (setf pre-consult consult))
-                  (progn
-                    (push pre-consult remainder-list)
-                    (loop-finish)))))
+        with scale-list-length = (length scale-list)
+        and scale-index = 0
+        and pre-consult = second
+        do (let ((scale (if (> scale-index (1- scale-list-length))
+                            nil
+                            (nth scale-index scale-list))))
+             (if (and scale
+                      (>= pre-consult scale))
+                 (multiple-value-bind (consult remainder)
+                     (floor pre-consult scale)
+                   (push remainder remainder-list)
+                   (incf scale-index)
+                   (setf pre-consult consult))
+                 (progn
+                   (push pre-consult remainder-list)
+                   (loop-finish)))))
       (format stream (format nil "~~{~~A~~A~@[~~^ ~]~~}" (not chinese-p))
               (loop
-                 for remainder in remainder-list
-                 and unit in (reverse (subseq unit-list 0 (length remainder-list)))
-                 when (> remainder 0)
-                   collect remainder
-                 when (> remainder 0)
-                   collect unit)))))
+                for remainder in remainder-list
+                and unit in (reverse (subseq unit-list 0 (length remainder-list)))
+                when (> remainder 0)
+                  collect remainder
+                when (> remainder 0)
+                  collect unit)))))
 
 ;;; datetime parse utils
 
