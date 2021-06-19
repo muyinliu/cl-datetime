@@ -11,48 +11,66 @@
 
 ;;; universal-time to unix-time utils
 
+(declaim (inline universal-time->unix-time))
 (defun universal-time->unix-time (universal-time)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (- universal-time
      +unix->universal-time+))
 
+(declaim (inline universal-time-ms->unix-time-ms))
 (defun universal-time-ms->unix-time-ms (universal-time-ms)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (- universal-time-ms
      +unix->universal-time-ms+))
 
+(declaim (inline universal-time-us->unix-time-us))
 (defun universal-time-us->unix-time-us (universal-time-us)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (- universal-time-us
      +unix->universal-time-us+))
 
 
 ;;; unix-time to universal-time utils
 
+(declaim (inline unix-time->universal-time))
 (defun unix-time->universal-time (unix-time)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (+ unix-time
      +unix->universal-time+))
 
+(declaim (inline unix-time-ms->universal-time-ms))
 (defun unix-time-ms->universal-time-ms (unix-time-ms)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (+ unix-time-ms
      +unix->universal-time-ms+))
 
+(declaim (inline unix-time-us->universal-time-us))
 (defun unix-time-us->universal-time-us (unix-time-us)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (+ unix-time-us
      +unix->universal-time-us+))
 
 
 ;;; universal-time utils
 
+(declaim (inline get-universal-time-ms))
 (defun get-universal-time-ms ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (unix-time-ms->universal-time-ms
    (get-unix-time-ms)))
 
+(declaim (inline get-universal-time-us))
 (defun get-universal-time-us ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (unix-time-us->universal-time-us
    (get-unix-time-us)))
 
 
 ;;; unix-time utils
 
+(declaim (inline get-unix-time))
 (defun get-unix-time ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (universal-time->unix-time
    (get-universal-time)))
 
@@ -60,6 +78,7 @@
 ;;; decode utils
 
 (defun decode-universal-time-ms (universal-time-ms &optional time-zone)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (multiple-value-bind (universal-time millisecond)
       (truncate universal-time-ms 1000)
     (multiple-value-bind (second minute hour date month year day daylight-p zone)
@@ -67,10 +86,12 @@
       (values millisecond second minute hour date month year day daylight-p zone))))
 
 (defun get-decoded-time-ms ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (decode-universal-time-ms (get-universal-time-ms)))
 
 
 (defun decode-universal-time-us (universal-time-us &optional time-zone)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (multiple-value-bind (universal-time remainder)
       (truncate universal-time-us 1000000)
     (multiple-value-bind (millisecond microsecond)
@@ -81,17 +102,20 @@
                 second minute hour date month year day daylight-p zone)))))
 
 (defun get-decoded-time-us ()
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (decode-universal-time-us (get-universal-time-us)))
 
 
 ;;; encode utils
 
 (defun encode-universal-time-ms (millisecond second minute hour date month year zone)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (+ (* 1000 (encode-universal-time second minute hour date month year zone))
      millisecond))
 
 (defun encode-universal-time-us (microsecond millisecond
                                  second minute hour date month year zone)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (+ (* 1000000 (encode-universal-time second minute hour date month year zone))
      (* 1000 millisecond)
      microsecond))
@@ -127,6 +151,7 @@
                 (write-string (subseq number-string 0 length) stream))))))
 
 (defun format-week-day (stream day char-count)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (write-string (case char-count
                   ((1 2 3)
                    (ccase day
@@ -164,6 +189,7 @@
                              millisecond
                              second minute hour date month year day
                              daylight-p zone)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (declare (ignorable microsecond daylight-p))
   (case prev-char
     (#\y (format-integer stream year char-count 4))
@@ -196,6 +222,7 @@
 (defun datetime-formatter (&optional format-string)
   "Date and time formatter. return a function:
   (lambda (stream &key time time-ms time-us zone))"
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (unless format-string
     (setf format-string "yyyy-MM-dd'T'HH:mm:ss.SSS"))
   (lambda (stream &key time time-ms time-us zone)
@@ -248,6 +275,7 @@
                  (go peek-char))))))))
 
 (defun datetime-formatter-reader (stream subchar arg)
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (declare (ignore subchar arg))
   (let ((format-string (read stream nil (values) t)))
     (datetime-formatter format-string)))

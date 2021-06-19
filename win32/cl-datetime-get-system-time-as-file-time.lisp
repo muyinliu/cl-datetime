@@ -24,6 +24,7 @@
 
 (defun GetSystemTimeAsFileTime ()
   "GetSystemTimeAsFileTime can only accurate to 100-nanosecond."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (cffi:with-foreign-object (FILETIME '(:struct FILETIME))
     (%GetSystemTimeAsFileTime FILETIME)
     (cffi:with-foreign-slots ((dwLowDateTime dwHighDateTime)
@@ -34,8 +35,10 @@
 
 (defconstant +unix-epoch-filetime+ 116444736000000000)
 
+(declaim (inline get-unix-time-us))
 (defun get-unix-time-us ()
   "get unix-time in microseconds(us)."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (multiple-value-bind (dwHighDateTime dwLowDateTime)
       (GetSystemTimeAsFileTime)
     (multiple-value-bind (us)
@@ -45,8 +48,10 @@
                   10)
       us)))
 
+(declaim (inline get-unix-time-ms))
 (defun get-unix-time-ms ()
   "get unix-time in millisecond(ms)."
+  (declare (optimize (speed 3) (safety 0) (debug 0)))
   (multiple-value-bind (ms)
       (truncate (get-unix-time-us) 1000)
     ms))
