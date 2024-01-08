@@ -224,7 +224,7 @@
   (lambda (stream &key time time-ms time-us zone))"
   (declare (optimize (speed 3) (safety 0) (debug 0)))
   (unless format-string
-    (setf format-string "yyyy-MM-dd'T'HH:mm:ss.SSS"))
+    (setf format-string "yyyy-MM-dd'T'HH:mm:ss.SSSZ"))
   (lambda (stream &key time time-ms time-us zone)
     (when zone
       (assert (<= -12 zone 11)))
